@@ -1,2 +1,0 @@
-# coopers-page
-teste coopers
