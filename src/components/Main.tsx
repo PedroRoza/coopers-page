@@ -2,7 +2,7 @@
 
 
 export default function Hero() {
-  const user  = true
+  const user = true
 
   const scrollToTodoList = () => {
     const todoSection = document.getElementById("todo-section")
