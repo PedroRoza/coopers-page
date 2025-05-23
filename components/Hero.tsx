@@ -4,8 +4,19 @@ import Link from "next/link"
 export default function Hero() {
   return (
     <section className="relative w-full bg-white">
+      <div className="-top-[70px] h-screen absolute right-0">
+        <div className="z-0">
+            <Image
+              src="/BG.png"
+              alt="Modern apartment interior"
+              width={400}
+              height={300}
+              className="object-cover w-full h-full"
+            />
+          </div>
+      </div>
       <div className="container mx-auto px-4 py-12 md:py-16 flex flex-col md:flex-row items-center">
-        <div className="w-full md:w-1/2 z-10">
+        <div className="w-full md:w-1/2 z-10 pl-24">
           <h1 className="text-4xl md:text-5xl font-bold mb-2">
             Organize
             <span className="block text-green-500">your daily jobs</span>
@@ -19,19 +30,17 @@ export default function Hero() {
             Go to To-do list
           </Link>
         </div>
-
-        <div className="w-full md:w-1/2 mt-8 md:mt-0 relative">
-          <div className="absolute top-0 right-0 w-full h-full bg-green-500 transform -rotate-6 z-0"></div>
-          <div className="relative z-10">
-            <Image
-              src="/foto.png"
-              alt="Modern apartment interior"
-              width={500}
-              height={400}
-              className="w-full h-auto object-cover"
-            />
-          </div>
-        </div>
+      <div className="w-full md:w-1/2 mt-8 md:mt-0 flex items-center justify-center h-1/2">
+  <div className="z-20 w-full h-full flex justify-center pl-28">
+    <Image
+      src="/foto.png"
+      alt="Modern apartment interior"
+      width={400}
+      height={300}
+      className="object-cover max-w-full max-h-full"
+    />
+  </div>
+</div>
       </div>
 
       <div className="flex justify-center mt-4 mb-12">
