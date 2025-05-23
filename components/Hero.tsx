@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function Hero() {
   return (
-    <section className="relative w-full h-screen bg-white">
+    <section className="relative w-full h-[84vh] bg-white">
       <div className="md:-top-[70px] hidden sm:block h-screen absolute right-0">
         <div className="z-0">
           <Image
@@ -15,6 +15,7 @@ export default function Hero() {
           />
         </div>
       </div>
+
       <div className="container mx-auto px-4 py-12 md:py-16 flex flex-col md:flex-row items-center">
         <div className="w-full md:w-1/2 z-10 md:pl-24">
           <h1 className="text-4xl md:text-5xl  font-bold mb-2">
@@ -55,7 +56,7 @@ export default function Hero() {
         </div>
       </div>
 
-      <div className="flex justify-center mt-4 mb-12">
+       <div className="w-full py-6 flex justify-center absolute bottom-0 left-0 right-0">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
