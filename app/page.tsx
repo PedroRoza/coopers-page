@@ -21,6 +21,32 @@ export default function Home() {
 
   return (
     <main className="min-h-screen flex flex-col overflow-x-hidden">
+      {/* BG decorativo topo direita */}
+      <div className="absolute inset-y-0 right-0 top-0 z-10 w-2/5 h-screen hidden sm:block ">
+        <img
+          src="/BG.png"
+          alt="Fundo decorativo"
+          className="w-full h-full object-cover"
+        />
+        <img
+          src="/foto.png"
+          alt="Decoração lateral"
+          className="w-full h-1/2 object-contain absolute top-1/4"
+        />
+      </div>
+      <div className="absolute inset-y-0 right-0 top-1/2 z-10 w-3/4 block sm:hidden ">
+        <img
+          src="/BG.png"
+          alt="Fundo decorativo"
+          className="w-full h-full object-cover"
+        />
+        <img
+          src="/foto.png"
+          alt="Decoração lateral"
+          className="w-full h-3/4 object-contain absolute top-10"
+        />
+      </div>
+
       <Header />
       <Hero />
       <TodoTitle />

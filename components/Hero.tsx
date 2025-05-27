@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function Hero() {
   return (
     <section className="relative w-full h-[84vh] bg-white">
-      <div className="md:-top-[70px] hidden sm:block h-screen absolute right-0">
+      {/* <div className="md:-top-[70px] hidden sm:block h-screen absolute right-0">
         <div className="z-0">
           <Image
             src="/BG.png"
@@ -14,7 +14,7 @@ export default function Hero() {
             className="object-cover w-full h-full"
           />
         </div>
-      </div>
+      </div> */}
 
       <div className="container mx-auto px-4 py-12 md:py-16 flex flex-col md:flex-row items-center">
         <div className="w-full md:w-1/2 z-0 md:pl-24">
@@ -31,7 +31,7 @@ export default function Hero() {
             Go to To-do list
           </Link>
         </div>
-        <div className="w-full md:w-1/2 mt-8 md:mt-0 flex items-center justify-center h-1/2">
+        {/* <div className="w-full md:w-1/2 mt-8 md:mt-0 flex items-center justify-center h-1/2">
           <div className="z-0 w-full h-full flex justify-center pl-28">
             <div className="block md:hidden w-3/4 absolute right-0 ">
               <div className="z-0 relative right-0 -top-14 w-full ">
@@ -53,7 +53,7 @@ export default function Hero() {
               />
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
        <div className="w-full py-6 flex justify-center absolute bottom-0 left-0 right-0">
