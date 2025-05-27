@@ -95,14 +95,15 @@ export default function ContactForm() {
     <section className="w-full bg-white py-16">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center mb-8">
-            <div className="w-full md:w-1/3 mb-6 md:mb-0 flex justify-center">
+          <div className="flex flex-col items-center mb-8">
+            <div className="w-full md:w-full mb-6 flex items-center justify-center">
+                <div className="h-4 w-16 bg-green-500"></div>
               <div className="relative w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden">
-                <Image src="/image-form.png" alt="Contact person" fill className="object-cover" />
+                <Image src="/image-form.png" alt="Contact person" fill className="object-cover"/>
               </div>
             </div>
 
-            <div className="w-full md:w-2/3 md:pl-8">
+            <div className="w-full md:w-full">
               <div className="flex items-center mb-4">
                 <div className="bg-green-500 p-2 rounded-md mr-4">
                   <svg
