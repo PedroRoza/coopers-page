@@ -3,7 +3,13 @@ import { NextResponse } from 'next/server';
 import { PrismaClient } from '@/lib/generated/prisma'; // caminho para o seu client do prisma
 export async function GET(req: Request) {
   try {
-    const prisma = new PrismaClient()
+    const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL,
+    },
+  },
+})
     // Exemplo: buscar todos os todos, você pode filtrar por usuário depois
     const todos = await prisma.todo.findMany({
       orderBy: {

@@ -1,7 +1,13 @@
 import { PrismaClient } from '@/lib/generated/prisma'
 
 export async function PUT(req: Request) {
-  const prisma = new PrismaClient()
+  const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL,
+    },
+  },
+})
 
   try {
     const body = await req.json()

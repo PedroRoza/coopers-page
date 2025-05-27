@@ -2,7 +2,13 @@ import { PrismaClient } from '@/lib/generated/prisma'
 import bcrypt from 'bcrypt'
 
 export async function POST(req: Request) {
-  const prisma = new PrismaClient()
+  const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL,
+    },
+  },
+})
 
   try {
     const body = await req.json()
