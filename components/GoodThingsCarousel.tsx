@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Image from "next/image"
 
 interface CarouselItem {
   id: number
@@ -93,8 +92,8 @@ export default function GoodThingsCarousel() {
             <div className="flex justify-center gap-6">
               {carouselItems.map(({ id, image, title, description, altText }) => (
                 <div key={id} className="bg-white rounded-lg shadow-lg max-w-sm flex-shrink-0">
-                  <div className="relative h-64">
-                    <Image src={image} alt={altText} fill className="object-cover rounded-t-lg" />
+                  <div className="relative h-64 rounded-t-lg overflow-hidden">
+                    <img src={image} alt={altText} className="object-cover w-full h-full" />
                   </div>
                   <div className="p-6">
                     <h3 className="text-xl font-semibold mb-2">{title}</h3>
@@ -113,18 +112,17 @@ export default function GoodThingsCarousel() {
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
             >
-              <div className="bg-white rounded-lg overflow-hidden shadow-lg">
-                <Image
-                  src={carouselItems[currentIndex].image || "/placeholder.svg"}
+              <div className="relative bg-white rounded-lg overflow-hidden shadow-lg w-[400px] h-[300px]">
+                <img
+                  src={carouselItems[currentIndex].image}
                   alt={carouselItems[currentIndex].altText}
-                  width={600}
-                  height={300}
-                  className="object-cover w-full"
+                  className="absolute inset-0 w-full h-full object-cover"
                 />
-                <div className="p-6">
+                <div className="absolute inset-0 bg-black opacity-30"></div>
+                <div className="relative p-6 z-10 text-white">
                   <h3 className="text-xl font-semibold mb-2">{carouselItems[currentIndex].title}</h3>
-                  <p className="text-gray-600 mb-4">{carouselItems[currentIndex].description}</p>
-                  <button className="text-green-500 hover:text-green-700 focus:outline-none focus:underline">
+                  <p className="mb-4">{carouselItems[currentIndex].description}</p>
+                  <button className="text-green-300 hover:text-green-100 focus:outline-none focus:underline">
                     read more
                   </button>
                 </div>
@@ -143,7 +141,6 @@ export default function GoodThingsCarousel() {
                   />
                 ))}
               </div>
-                {/* btn slide */}
               <button
                 className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white/80 p-2 rounded-r-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 onClick={() =>

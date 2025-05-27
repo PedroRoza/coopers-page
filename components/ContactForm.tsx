@@ -109,10 +109,14 @@ export default function ContactForm() {
             <div className="w-full md:w-full mb-6 flex items-center justify-center">
               <div className="h-4 w-16 bg-green-500"></div>
               <div className="relative w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden">
-                <Image
+                <img
                   src="/image-form.png"
                   alt="Contact person"
-                  fill
+                  style={{
+                    position: 'absolute',
+                    width: '100%',
+                    height: '100%',
+                  }}
                   className="object-cover"
                 />
               </div>

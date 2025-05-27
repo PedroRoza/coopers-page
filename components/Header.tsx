@@ -31,7 +31,7 @@ export default function Header() {
   return (
     <header className="w-full py-4 px-4 md:px-8 flex justify-between items-center z-10">
       <div className="logo pl-0 md:pl-20">
-        <Image
+        <img
           src="/logo.png"
           alt="Coopers Logo"
           width={150}
