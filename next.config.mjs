@@ -7,9 +7,8 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-     loader: "akamai",
-     path: "/",
+    domains: ["https://coopers-page.vercel.app"], // Opcional: para imagens de outros domínios
   },
-}
+};
 
-export default nextConfig
+export default nextConfig;
