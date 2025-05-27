@@ -54,6 +54,7 @@ export default function LoginDialog({ onClose, onRegister }: LoginDialogProps) {
 
       toast.success("Login successful!")
       onClose()
+      location.reload()
     } catch (error) {
       console.error("Login error:", error)
       toast.error("Error during login. Please try again.")

@@ -240,20 +240,17 @@ export default function TodoSection() {
     setTodoItems(todoItems.map((item) => (item.id === id ? { ...item, isEditing: false } : item)))
   }
   return (
-    <section id="todo-list" className="w-full bg-black text-white py-16">
+    <section id="todo-list" className="w-ful py-16">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-6">To-do List</h2>
-        <p className="text-center mb-12 max-w-2xl mx-auto">
-          Drag and drop to set your main priorities, check when done and create what's new.
-        </p>
-
 
         <div className="flex flex-col md:flex-row gap-8 max-w-5xl mx-auto">
           <DndProvider backend={Backend}>
-            <div className="w-full md:w-1/2 bg-white text-black rounded-md p-6">
-              <div className="border-t-4 border-orange-500 pt-4">
-                <h3 className="text-xl font-bold mb-2">To-do</h3>
-                <p className="text-gray-600 mb-4">Take a breath. Start doing.</p>
+            <div className="md:w-1/2 bg-white border border-[#ccc] text-black rounded-md  shadow-xl">
+              <div className="bg-orange-500 w-full h-4"></div>
+              <div className="p-6 pt-4">
+                <h1 className="flex justify-center font-bold mb-2 text-6xl">To-do</h1>
+                <p className="text-gray-600 flex justify-center text-xl">Take a breath.</p>
+                <p className="text-gray-600 flex justify-center mb-4 text-xl">Start doing.</p>
 
                 <div className="mb-4">
                   <div className="flex">
@@ -275,8 +272,7 @@ export default function TodoSection() {
                     </button>
                   </div>
                 </div>
-
-                <div className="todo-list min-h-[300px]">
+                <div className="todo-list max-h-[300px] overflow-y-auto">
                   {todoItems.map((item, index) => (
                     <TodoItem
                       key={item.id}
@@ -308,15 +304,19 @@ export default function TodoSection() {
               </div>
             </div>
 
-            <div className="w-full md:w-1/2 bg-white text-black rounded-md p-6">
-              <div className="border-t-4 border-green-500 pt-4">
-                <h3 className="text-xl font-bold mb-2">Done</h3>
-                <p className="text-gray-600 mb-4">
-                  Congratulations!
-                  <span className="block font-medium">You have done {completedItems.length} tasks</span>
+            <div className="w-full md:w-1/2 bg-white border border-[#ccc] text-black rounded-md  shadow-xl">
+                <div className="bg-green-500 w-full h-4"></div>
+              <div className="pt-4 p-6">
+                <h3 className="flex justify-center font-bold mb-2 text-6xl">Done</h3>
+                <p className="text-gray-600 flex justify-center text-xl">
+                  {completedItems.length ? 'Congratulations!' : ''}
                 </p>
-
-                <div className="completed-list min-h-[300px]">
+                    <p className="flex justify-center text-xl mb-4">
+                      {completedItems.length
+                        ? `You have done ${completedItems.length} tasks`
+                        : ''}
+                    </p>
+                <div className="completed-list max-h-[300px] overflow-y-auto">
                   {completedItems.map((item, index) => (
                     <div key={item.id} className="flex items-center p-2 mb-2 border-b border-gray-200">
                       <input
