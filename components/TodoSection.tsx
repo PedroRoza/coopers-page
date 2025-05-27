@@ -15,7 +15,6 @@ interface TodoItem {
 
 const ItemTypes = {
   TODO: "todo",
-  COMPLETED: "completed",
 }
 
 function TodoItem({
@@ -27,42 +26,33 @@ function TodoItem({
   startEditing,
   updateItemContent,
   finishEditing,
-  type,
 }: {
   item: TodoItem
   index: number
-  moveItem: (dragIndex: number, hoverIndex: number, type: string) => void
+  moveItem: (dragIndex: number, hoverIndex: number) => void
   toggleComplete: (id: number) => void
   deleteItem: (id: number) => void
   startEditing: (id: number) => void
   updateItemContent: (id: number, content: string) => void
   finishEditing: (id: number) => void
-  type: string
 }) {
   const [{ isDragging }, drag] = useDrag(() => ({
-    type: type === "todo" ? ItemTypes.TODO : ItemTypes.COMPLETED,
-    item: { index, type },
+    type: ItemTypes.TODO,
+    item: { index },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
   }))
 
   const [, drop] = useDrop(() => ({
-    accept: [ItemTypes.TODO, ItemTypes.COMPLETED],
-    hover: (draggedItem: { index: number; type: string }) => {
-      if (draggedItem.index !== index || draggedItem.type !== type) {
-        moveItem(draggedItem.index, index, draggedItem.type)
+    accept: ItemTypes.TODO,
+    hover: (draggedItem: { index: number }) => {
+      if (draggedItem.index !== index) {
+        moveItem(draggedItem.index, index)
         draggedItem.index = index
-        draggedItem.type = type
       }
     },
   }))
-
-  // Função para evitar a propagação do evento para o elemento pai
-  const handleTextClick = (e: React.MouseEvent, id: number) => {
-    e.stopPropagation()
-    startEditing(id)
-  }
 
   return (
     <div
@@ -70,69 +60,51 @@ function TodoItem({
       className={`flex items-center p-2 mb-2 border-b border-gray-200 group ${isDragging ? "opacity-50" : "opacity-100"}`}
       style={{ cursor: "move" }}
     >
-      <div className="flex items-center w-full">
-        <button
-          onClick={() => toggleComplete(item.id)}
-          aria-label={`Mark "${item.content}" as ${item.completed ? "incomplete" : "complete"}`}
-          className={`w-8 h-8 mr-3 rounded-full flex items-center justify-center transition-colors duration-200
-            ${item.completed ? "bg-green-500" : "bg-white-500 border-2 border-orange-500"}`}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke={item.completed ? "white" : "green"}
-            strokeWidth="3"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
-        </button>
+      <button
+        onClick={() => toggleComplete(item.id)}
+        aria-label={`Mark "${item.content}" as ${item.completed ? "incomplete" : "complete"}`}
+        className={`w-8 h-8 mr-3 rounded-full flex items-center justify-center transition-colors duration-200
+          ${item.completed ? "bg-green-500" : "bg-white-500 border-2 border-orange-500"}`}
+      >
+      </button>
 
-        <div className="flex-grow">
-          {item.isEditing ? (
-            <input
-              type="text"
-              value={item.content}
-              onChange={(e) => updateItemContent(item.id, e.target.value)}
-              onBlur={() => finishEditing(item.id)}
-              onKeyDown={(e) => e.key === "Enter" && finishEditing(item.id)}
-              className="w-full p-1 border border-gray-300 rounded"
-              autoFocus
-              onClick={(e) => e.stopPropagation()}
-            />
-          ) : (
-            <span 
-              onClick={(e) => handleTextClick(e, item.id)} 
-              className={`block cursor-text ${item.completed ? "line-through text-gray-500" : ""}`}
-            >
-              {item.content}
-            </span>
-          )}
-        </div>
+      {item.isEditing ? (
+        <input
+          type="text"
+          value={item.content}
+          onChange={(e) => updateItemContent(item.id, e.target.value)}
+          onBlur={() => finishEditing(item.id)}
+          onKeyDown={(e) => e.key === "Enter" && finishEditing(item.id)}
+          className="flex-grow p-1 border border-gray-300 rounded"
+          autoFocus
+        />
+      ) : (
+        <span onClick={() => startEditing(item.id)} className="flex-grow cursor-text">
+          {item.content}
+        </span>
+      )}
 
-        <button
-          onClick={() => deleteItem(item.id)}
-          className="ml-2 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity focus:opacity-100"
-          aria-label={`Delete "${item.content}"`}
+      <button
+        onClick={() => deleteItem(item.id)}
+        className="ml-2 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity focus:opacity-100"
+        aria-label={`Delete "${item.content}"`}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M3 6h18"></path>
-            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-          </svg>
-        </button>
-      </div>
+          <path d="M3 6h18"></path>
+          <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+          <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+        </svg>
+      </button>
     </div>
   )
 }
@@ -165,68 +137,45 @@ export default function TodoSection() {
   const isMobile = useMediaQuery("(max-width: 768px)")
   const Backend = isMobile ? TouchBackend : HTML5Backend
 
-  const moveItem = (dragIndex: number, hoverIndex: number, type: string) => {
-    if (type === "todo") {
-      const draggedItem = todoItems[dragIndex]
-      const newItems = [...todoItems]
-      newItems.splice(dragIndex, 1)
-      newItems.splice(hoverIndex, 0, draggedItem)
-      setTodoItems(newItems)
-    } else {
-      const draggedItem = completedItems[dragIndex]
-      const newItems = [...completedItems]
-      newItems.splice(dragIndex, 1)
-      newItems.splice(hoverIndex, 0, draggedItem)
-      setCompletedItems(newItems)
-    }
-  }
-
-  const handleDrop = async (item: { id: number; type: string }) => {
-    if (item.type === "todo") {
-      // Moving from todo to completed
-      const movedItem = todoItems.find(i => i.id === item.id)
-      if (movedItem) {
-        await toggleComplete(movedItem.id)
-      }
-    } else {
-      // Moving from completed to todo
-      const movedItem = completedItems.find(i => i.id === item.id)
-      if (movedItem) {
-        await toggleComplete(movedItem.id)
-      }
-    }
+  const moveItem = (dragIndex: number, hoverIndex: number) => {
+    const draggedItem = todoItems[dragIndex]
+    const newItems = [...todoItems]
+    newItems.splice(dragIndex, 1)
+    newItems.splice(hoverIndex, 0, draggedItem)
+    setTodoItems(newItems)
   }
 
   const toggleComplete = async (id: number) => {
-    const item = todoItems.find((item) => item.id === id) || completedItems.find((item) => item.id === id)
-    if (!item) return
-
-    const newCompletedStatus = !item.completed
-    
-    try {
-      const response = await fetch(`/api/todoUpdate`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          id: item.id, 
-          content: item.content, 
-          completed: newCompletedStatus 
-        }),
-      })
-      
-      if (!response.ok) throw new Error("Failed to update todo")
-      
-      if (newCompletedStatus) {
-        // Moving to completed
+    const item = todoItems.find((item) => item.id === id)
+    if (item) {
+      try {
+        const response = await fetch(`/api/todoUpdate`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id:item.id, content: item.content, completed: true }),
+        })
+        if (!response.ok) throw new Error("Failed to update todo")
         setTodoItems(todoItems.filter((item) => item.id !== id))
         setCompletedItems([...completedItems, { ...item, completed: true }])
-      } else {
-        // Moving back to todo
-        setCompletedItems(completedItems.filter((item) => item.id !== id))
-        setTodoItems([...todoItems, { ...item, completed: false }])
+      } catch (error) {
+        console.error("Error updating todo:", error)
       }
-    } catch (error) {
-      console.error("Error updating todo:", error)
+    } else {
+      const completedItem = completedItems.find((item) => item.id === id)
+      if (completedItem) {
+        try {
+          const response = await fetch(`/api/todoUpdate`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: completedItem.id, content: completedItem.content, completed: false }),
+          })
+          if (!response.ok) throw new Error("Failed to update todo")
+          setCompletedItems(completedItems.filter((item) => item.id !== id))
+          setTodoItems([...todoItems, { ...completedItem, completed: false }])
+        } catch (error) {
+          console.error("Error updating todo:", error)
+        }
+      }
     }
   }
 
@@ -290,13 +239,11 @@ export default function TodoSection() {
 
     setTodoItems(todoItems.map((item) => (item.id === id ? { ...item, isEditing: false } : item)))
   }
-
   return (
     <section id="todo-list" className="w-ful py-16">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row gap-8 max-w-5xl mx-auto">
           <DndProvider backend={Backend}>
-            {/* To-do Column */}
             <div className="md:w-1/2 bg-white text-black rounded-md shadow-lg">
               <div className="bg-orange-500 w-full h-4"></div>
               <div className="p-6 pt-4">
@@ -324,16 +271,7 @@ export default function TodoSection() {
                     </button>
                   </div>
                 </div>
-                
-                <div 
-                  className="todo-list max-h-[300px] overflow-y-auto"
-                  onDrop={(e) => {
-                    e.preventDefault()
-                    const item = JSON.parse(e.dataTransfer.getData("text"))
-                    handleDrop(item)
-                  }}
-                  onDragOver={(e) => e.preventDefault()}
-                >
+                <div className="todo-list max-h-[300px] overflow-y-auto">
                   {todoItems.map((item, index) => (
                     <TodoItem
                       key={item.id}
@@ -345,7 +283,6 @@ export default function TodoSection() {
                       startEditing={startEditing}
                       updateItemContent={updateItemContent}
                       finishEditing={finishEditing}
-                      type="todo"
                     />
                   ))}
 
@@ -366,42 +303,41 @@ export default function TodoSection() {
               </div>
             </div>
 
-            {/* Completed Column */}
-            <div className="w-full md:w-1/2 bg-white text-black rounded-md shadow-lg">
-              <div className="bg-green-500 w-full h-4"></div>
+            <div className="w-full md:w-1/2 bg-white text-black rounded-md  shadow-lg">
+                <div className="bg-green-500 w-full h-4"></div>
               <div className="pt-4 p-6">
                 <h3 className="flex justify-center font-bold mb-2 text-6xl">Done</h3>
                 <p className="text-gray-600 flex justify-center text-xl">
                   {completedItems.length ? 'Congratulations!' : ''}
                 </p>
-                <p className="flex justify-center text-xl mb-4">
-                  {completedItems.length
-                    ? `You have done ${completedItems.length} tasks`
-                    : ''}
-                </p>
-                
-                <div 
-                  className="completed-list max-h-[300px] overflow-y-auto"
-                  onDrop={(e) => {
-                    e.preventDefault()
-                    const item = JSON.parse(e.dataTransfer.getData("text"))
-                    handleDrop(item)
-                  }}
-                  onDragOver={(e) => e.preventDefault()}
-                >
+                    <p className="flex justify-center text-xl mb-4">
+                      {completedItems.length
+                        ? `You have done ${completedItems.length} tasks`
+                        : ''}
+                    </p>
+                <div className="completed-list max-h-[300px] overflow-y-auto">
                   {completedItems.map((item, index) => (
-                    <TodoItem
-                      key={item.id}
-                      item={item}
-                      index={index}
-                      moveItem={moveItem}
-                      toggleComplete={toggleComplete}
-                      deleteItem={deleteItem}
-                      startEditing={startEditing}
-                      updateItemContent={updateItemContent}
-                      finishEditing={finishEditing}
-                      type="completed"
-                    />
+                    <div key={item.id} className="flex items-center p-2 mb-2 border-b border-gray-200">
+                      <button
+                        onClick={() => toggleComplete(item.id)}
+                        aria-label={`Mark "${item.content}" as incomplete`}
+                        className="w-8 h-8 mr-3 rounded-full flex items-center justify-center bg-green-500"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="w-6 h-6"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="white"
+                          strokeWidth="3"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </button>
+
+                      <span className="flex-grow line-through text-gray-500">{item.content}</span>
+                      <span className="ml-2 text-xs text-gray-400">done</span>
+                    </div>
                   ))}
 
                   {completedItems.length === 0 && (
