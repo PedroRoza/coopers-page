@@ -129,9 +129,13 @@ export default function TodoSection() {
   useEffect(() => {
     const fetchTodos = async () => {
       try {
+        
+        const userDataRaw = localStorage.getItem("userData");
+        const userData = userDataRaw ? JSON.parse(userDataRaw) : null;
         const res = await fetch("/api/todos");
         const data = await res.json();
-        const mappedTodos = data.map((todo: any) => ({
+        const filteredData = data.filter((td: any) => td.user.id == userData.id)
+        const mappedTodos = filteredData.map((todo: any) => ({
           id: todo.id,
           content: todo.content,
           completed: todo.completed,
