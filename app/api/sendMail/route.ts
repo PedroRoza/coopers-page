@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     // envio de aviso de contato
     await transporter.sendMail({
       from: `"Website Contact" <${process.env.EMAIL_USER}>`,
-      to: process.env.EMAIL_TO,
+      to: 'pedrosilva.rosa@hotmail.com',
       subject: 'New contact received!',
       html: `
         <h2>New message from website</h2>
