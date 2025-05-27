@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## 🚀 Como Iniciar
 
-## Getting Started
-
-First, run the development server:
+Siga os passos abaixo para clonar e executar o projeto localmente:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Instale as dependências
+pnpm install
+
+# Inicie o servidor de desenvolvimento
+pnpm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🧩 Tecnologias Utilizadas
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Este projeto utiliza uma combinação de ferramentas, frameworks e bibliotecas modernas, cada uma com seu propósito específico:
 
-## Learn More
+### 🔧 Frameworks e Ferramentas Principais
 
-To learn more about Next.js, take a look at the following resources:
+- **Next.js**  
+  Framework baseado em React que permite renderização híbrida (SSR e SSG), além de possuir API Routes para backend. Usado como base principal do projeto.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **TypeScript**  
+  Superset do JavaScript que adiciona tipagem estática opcional, ajudando a evitar bugs e a melhorar a legibilidade do código.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Tailwind CSS**  
+  Framework utilitário de CSS para estilização rápida, responsiva e customizável, direto nas classes do HTML.
 
-## Deploy on Vercel
+- **Prisma ORM**  
+  ORM (Object-Relational Mapper) moderno e eficiente que permite mapear o banco de dados em objetos TypeScript.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Supabase**  
+  Plataforma de backend como serviço (BaaS) que oferece banco de dados PostgreSQL, autenticação, armazenamento e APIs em tempo real. Integra-se facilmente com o Prisma.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Nodemailer**  
+  Biblioteca Node.js para envio de e-mails via protocolo SMTP. Usada neste projeto para enviar os dados do formulário para um e-mail de destino.
+
+---
+
+## 💻 Estrutura do Projeto
+
+```
+/
+├── pages/              # Rotas do Next.js
+│   ├── api/            # Rotas de API (ex: envio de e-mail)
+│   └── index.tsx       # Página principal com o formulário
+├── components/         # Componentes reutilizáveis
+├── styles/             # Estilos globais e configuração do Tailwind
+├── prisma/             # Schemas e migrações do banco de dados
+├── utils/              # Funções auxiliares (ex: validação de dados)
+├── .env.local          # Variáveis de ambiente
+└── README.md
+```
+
+
+---
+
+## 📦 Requisitos
+
+- Node.js 22+
+- PNPM (você pode instalar com `npm i -g pnpm`)
+- Conta no Supabase
+- Conta de e-mail com SMTP habilitado (ex: Gmail, Outlook, etc.)
+
+---
+
+## 📬 Funcionalidades
+
+- Validação de campos do formulário
+- Envio de mensagens via e-mail
+- Integração com banco de dados PostgreSQL (via Supabase)
+- Estilização moderna com Tailwind CSS
+- Código modular e tipado com TypeScript

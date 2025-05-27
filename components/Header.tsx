@@ -53,7 +53,7 @@ export default function Header() {
         <LoginDialog
           onClose={() => {
             setShowLogin(false);
-            setIsLoggedIn(true); // Assume que login foi bem-sucedido
+            setIsLoggedIn(true); 
           }}
           onRegister={() => {
             setShowLogin(false);

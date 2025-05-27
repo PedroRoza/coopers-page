@@ -1,15 +1,14 @@
-"use client"
+"use client";
 
-import type React from "react"
-
-import { useState } from "react"
-import Image from "next/image"
+import type React from "react";
+import { useState } from "react";
+import Image from "next/image";
 
 interface FormData {
-  name: string
-  email: string
-  telephone: string
-  message: string
+  name: string;
+  email: string;
+  telephone: string;
+  message: string;
 }
 
 export default function ContactForm() {
@@ -18,83 +17,89 @@ export default function ContactForm() {
     email: "",
     telephone: "",
     message: "",
-  })
+  });
 
-  const [errors, setErrors] = useState<Partial<FormData>>({})
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitSuccess, setSubmitSuccess] = useState(false)
+  const [errors, setErrors] = useState<Partial<FormData>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const validateForm = () => {
-    const newErrors: Partial<FormData> = {}
+    const newErrors: Partial<FormData> = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = "Nome é obrigatório"
+      newErrors.name = "Name is required";
     }
 
     if (!formData.email.trim()) {
-      newErrors.email = "Email é obrigatório"
+      newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email inválido"
+      newErrors.email = "Invalid email format";
     }
 
-    if (formData.telephone && !/^\d{10,11}$/.test(formData.telephone.replace(/\D/g, ""))) {
-      newErrors.telephone = "Telefone inválido"
+    if (
+      formData.telephone &&
+      !/^\d{10,14}$/.test(formData.telephone.replace(/\D/g, ""))
+    ) {
+      newErrors.telephone = "Invalid telephone number";
     }
 
     if (!formData.message.trim()) {
-      newErrors.message = "Mensagem é obrigatória"
+      newErrors.message = "Message is required";
     }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
 
-    // Clear error when user types
     if (errors[name as keyof FormData]) {
-      setErrors((prev) => ({ ...prev, [name]: undefined }))
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault()
+    e.preventDefault();
 
-  if (!validateForm()) return
+    if (!validateForm()) return;
 
-  setIsSubmitting(true)
+    setIsSubmitting(true);
 
-  try {
-    const response = await fetch("/api/sendMail", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    })
+    try {
+      const response = await fetch("/api/sendMail", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-    if (!response.ok) {
-      throw new Error("Erro ao enviar o formulário")
+      if (!response.ok) {
+        throw new Error("Error submitting the form");
+      }
+
+      setSubmitSuccess(true);
+      setFormData({
+        name: "",
+        email: "",
+        telephone: "",
+        message: "",
+      });
+
+      setTimeout(() => setSubmitSuccess(false), 3000);
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert(
+        "An error occurred while sending your message. Please try again later."
+      );
+    } finally {
+      setIsSubmitting(false);
     }
-
-    setSubmitSuccess(true)
-    setFormData({
-      name: "",
-      email: "",
-      telephone: "",
-      message: "",
-    })
-
-    setTimeout(() => setSubmitSuccess(false), 3000)
-  } catch (error) {
-    console.error("Erro ao enviar formulário:", error)
-    alert("Ocorreu um erro ao enviar sua mensagem. Tente novamente mais tarde.")
-  } finally {
-    setIsSubmitting(false)
-  }
-}
+  };
 
   return (
     <section className="w-full bg-white py-16">
@@ -102,9 +107,14 @@ export default function ContactForm() {
         <div className="max-w-4xl mx-auto">
           <div className="flex flex-col items-center mb-8">
             <div className="w-full md:w-full mb-6 flex items-center justify-center">
-                <div className="h-4 w-16 bg-green-500"></div>
+              <div className="h-4 w-16 bg-green-500"></div>
               <div className="relative w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden">
-                <Image src="/image-form.png" alt="Contact person" fill className="object-cover"/>
+                <Image
+                  src="/image-form.png"
+                  alt="Contact person"
+                  fill
+                  className="object-cover"
+                />
               </div>
             </div>
 
@@ -145,7 +155,9 @@ export default function ContactForm() {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className={`w-full p-3 border ${errors.name ? "border-red-500" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-green-500`}
+                className={`w-full p-3 border ${
+                  errors.name ? "border-red-500" : "border-gray-300"
+                } rounded-md focus:outline-none focus:ring-2 focus:ring-green-500`}
                 placeholder="Type your name here"
                 aria-required="true"
                 aria-invalid={!!errors.name}
@@ -169,7 +181,9 @@ export default function ContactForm() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`w-full p-3 border ${errors.email ? "border-red-500" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-green-500`}
+                  className={`w-full p-3 border ${
+                    errors.email ? "border-red-500" : "border-gray-300"
+                  } rounded-md focus:outline-none focus:ring-2 focus:ring-green-500`}
                   placeholder="example@email.com"
                   aria-required="true"
                   aria-invalid={!!errors.email}
@@ -184,7 +198,7 @@ export default function ContactForm() {
 
               <div>
                 <label htmlFor="telephone" className="block mb-1 font-medium">
-                  Telephone*
+                  Telephone
                 </label>
                 <input
                   type="tel"
@@ -192,10 +206,14 @@ export default function ContactForm() {
                   name="telephone"
                   value={formData.telephone}
                   onChange={handleChange}
-                  className={`w-full p-3 border ${errors.telephone ? "border-red-500" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-green-500`}
+                  className={`w-full p-3 border ${
+                    errors.telephone ? "border-red-500" : "border-gray-300"
+                  } rounded-md focus:outline-none focus:ring-2 focus:ring-green-500`}
                   placeholder="+1 (000) 000-0000"
                   aria-invalid={!!errors.telephone}
-                  aria-describedby={errors.telephone ? "telephone-error" : undefined}
+                  aria-describedby={
+                    errors.telephone ? "telephone-error" : undefined
+                  }
                 />
                 {errors.telephone && (
                   <p id="telephone-error" className="mt-1 text-red-500 text-sm">
@@ -215,7 +233,9 @@ export default function ContactForm() {
                 value={formData.message}
                 onChange={handleChange}
                 rows={5}
-                className={`w-full p-3 border ${errors.message ? "border-red-500" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-green-500`}
+                className={`w-full p-3 border ${
+                  errors.message ? "border-red-500" : "border-gray-300"
+                } rounded-md focus:outline-none focus:ring-2 focus:ring-green-500`}
                 placeholder="Type what you want to say to us"
                 aria-required="true"
                 aria-invalid={!!errors.message}
@@ -238,13 +258,16 @@ export default function ContactForm() {
             </button>
 
             {submitSuccess && (
-              <div className="p-3 bg-green-100 text-green-700 rounded-md" role="alert">
-                Mensagem enviada com sucesso!
+              <div
+                className="p-3 bg-green-100 text-green-700 rounded-md"
+                role="alert"
+              >
+                Message sent successfully!
               </div>
             )}
           </form>
         </div>
       </div>
     </section>
-  )
+  );
 }

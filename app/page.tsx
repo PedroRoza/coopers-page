@@ -21,7 +21,6 @@ export default function Home() {
 
   return (
     <main className="min-h-screen flex flex-col overflow-x-hidden">
-      {/* BG decorativo topo direita */}
       <div className="absolute inset-y-0 right-0 top-0 z-10 w-2/5 h-screen hidden sm:block ">
         <img
           src="/BG.png"

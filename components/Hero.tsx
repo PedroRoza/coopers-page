@@ -12,7 +12,7 @@ export default function Hero() {
           </h1>
           <p className="text-lg mb-6">The only way to get things done</p>
           <Link
-            href="#todo-list"
+            href="/"
             className="inline-block bg-green-500 text-white px-6 py-3 rounded-md hover:bg-green-600 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
             aria-label="Go to To-do list"
           >

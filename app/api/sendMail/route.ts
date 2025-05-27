@@ -40,7 +40,7 @@ export async function POST(req: Request) {
 
     // email de retorno pelo contato
     await transporter.sendMail({
-      from: `"Your Name or Company" <${process.env.EMAIL_USER}>`,
+      from: `"Coopers page" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: 'Thanks for reaching out!',
       html: `
