@@ -8,7 +8,7 @@ import { useMediaQuery } from "@/hooks/use-media-query"
 
 interface TodoItem {
   id: number
-  text: string
+  content: string
   completed: boolean
   isEditing?: boolean
 }
@@ -24,7 +24,7 @@ function TodoItem({
   toggleComplete,
   deleteItem,
   startEditing,
-  updateItemText,
+  updateItemContent,
   finishEditing,
 }: {
   item: TodoItem
@@ -33,7 +33,7 @@ function TodoItem({
   toggleComplete: (id: number) => void
   deleteItem: (id: number) => void
   startEditing: (id: number) => void
-  updateItemText: (id: number, text: string) => void
+  updateItemContent: (id: number, content: string) => void
   finishEditing: (id: number) => void
 }) {
   const [{ isDragging }, drag] = useDrag(() => ({
@@ -65,14 +65,14 @@ function TodoItem({
         checked={item.completed}
         onChange={() => toggleComplete(item.id)}
         className="w-5 h-5 mr-3 accent-green-500 cursor-pointer"
-        aria-label={`Mark "${item.text}" as ${item.completed ? "incomplete" : "complete"}`}
+        aria-label={`Mark "${item.content}" as ${item.completed ? "incomplete" : "complete"}`}
       />
 
       {item.isEditing ? (
         <input
           type="text"
-          value={item.text}
-          onChange={(e) => updateItemText(item.id, e.target.value)}
+          value={item.content}
+          onChange={(e) => updateItemContent(item.id, e.target.value)}
           onBlur={() => finishEditing(item.id)}
           onKeyDown={(e) => e.key === "Enter" && finishEditing(item.id)}
           className="flex-grow p-1 border border-gray-300 rounded"
@@ -80,14 +80,14 @@ function TodoItem({
         />
       ) : (
         <span onClick={() => startEditing(item.id)} className="flex-grow cursor-text">
-          {item.text}
+          {item.content}
         </span>
       )}
 
       <button
         onClick={() => deleteItem(item.id)}
         className="ml-2 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity focus:opacity-100"
-        aria-label={`Delete "${item.text}"`}
+        aria-label={`Delete "${item.content}"`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -112,20 +112,20 @@ function TodoItem({
 export default function TodoSection() {
   const [todoItems, setTodoItems] = useState<TodoItem[]>([])
   const [completedItems, setCompletedItems] = useState<TodoItem[]>([])
-
   const [newTaskText, setNewTaskText] = useState("")
 
   useEffect(() => {
     const fetchTodos = async () => {
       try {
         const res = await fetch("/api/todos")
-        const data: TodoItem[] = await res.json()
-        console.log('data', data)
-        const todos = data.filter((todo) => !todo.completed)
-        const completed = data.filter((todo) => todo.completed)
-
-        setTodoItems(todos)
-        setCompletedItems(completed)
+        const data = await res.json()
+        const mappedTodos = data.map((todo: any) => ({
+          id: todo.id,
+          content: todo.content,
+          completed: todo.completed,
+        }))
+        setTodoItems(mappedTodos.filter((todo: TodoItem) => !todo.completed))
+        setCompletedItems(mappedTodos.filter((todo: TodoItem) => todo.completed))
       } catch (error) {
         console.error("Failed to fetch todos", error)
       }
@@ -133,28 +133,7 @@ export default function TodoSection() {
 
     fetchTodos()
   }, [])
-  
-  // const [todoItems, setTodoItems] = useState<TodoItem[]>([
-  //   { id: 1, text: "This is a new task", completed: false },
-  //   { id: 2, text: "Develop the To-do list page", completed: false },
-  //   { id: 3, text: "Create the drag-and-drop functionality", completed: false },
-  //   { id: 4, text: "Add new tasks", completed: false },
-  //   { id: 5, text: "Delete items", completed: false },
-  //   { id: 6, text: "Erase all", completed: false },
-  //   { id: 7, text: "Checked items goes to Done list", completed: false },
-  //   { id: 8, text: "This text indicates the item may be edited", completed: false },
-  //   { id: 9, text: "Editing an item", completed: false },
-  // ])
 
-  // const [completedItems, setCompletedItems] = useState<TodoItem[]>([
-  //   { id: 101, text: "Get FTP credentials", completed: true },
-  //   { id: 102, text: "Home Page Design", completed: true },
-  //   { id: 103, text: "E-mail John about the deadline", completed: true },
-  //   { id: 104, text: "Create a Google Drive folder", completed: true },
-  //   { id: 105, text: "Send a gift to the client", completed: true },
-  // ])
-
-  // const [newTaskText, setNewTaskText] = useState("")
   const isMobile = useMediaQuery("(max-width: 768px)")
   const Backend = isMobile ? TouchBackend : HTML5Backend
 
@@ -166,20 +145,36 @@ export default function TodoSection() {
     setTodoItems(newItems)
   }
 
-  const toggleComplete = (id: number) => {
+  const toggleComplete = async (id: number) => {
     const item = todoItems.find((item) => item.id === id)
     if (item) {
-      // Remove from todoItems
-      setTodoItems(todoItems.filter((item) => item.id !== id))
-      // Add to completedItems
-      setCompletedItems([...completedItems, { ...item, completed: true }])
+      try {
+        const response = await fetch(`/api/todoUpdate`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id:item.id, content: item.content, completed: true }),
+        })
+        if (!response.ok) throw new Error("Failed to update todo")
+        setTodoItems(todoItems.filter((item) => item.id !== id))
+        setCompletedItems([...completedItems, { ...item, completed: true }])
+      } catch (error) {
+        console.error("Error updating todo:", error)
+      }
     } else {
       const completedItem = completedItems.find((item) => item.id === id)
       if (completedItem) {
-        // Remove from completedItems
-        setCompletedItems(completedItems.filter((item) => item.id !== id))
-        // Add to todoItems
-        setTodoItems([...todoItems, { ...completedItem, completed: false }])
+        try {
+          const response = await fetch(`/api/todoUpdate`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: completedItem.id, content: completedItem.content, completed: false }),
+          })
+          if (!response.ok) throw new Error("Failed to update todo")
+          setCompletedItems(completedItems.filter((item) => item.id !== id))
+          setTodoItems([...todoItems, { ...completedItem, completed: false }])
+        } catch (error) {
+          console.error("Error updating todo:", error)
+        }
       }
     }
   }
@@ -189,23 +184,33 @@ export default function TodoSection() {
     setCompletedItems(completedItems.filter((item) => item.id !== id))
   }
 
-  const eraseAllTodos = () => {
-    setTodoItems([])
-  }
+  const eraseAllTodos = () => setTodoItems([])
+  const eraseAllCompleted = () => setCompletedItems([])
 
-  const eraseAllCompleted = () => {
-    setCompletedItems([])
-  }
+  const addNewTask = async () => {
+    const userDataRaw = localStorage.getItem("userData")
+    const userData = userDataRaw ? JSON.parse(userDataRaw) : null
+    if (!userData?.id) return
 
-  const addNewTask = () => {
     if (newTaskText.trim()) {
-      const newItem: TodoItem = {
-        id: Date.now(),
-        text: newTaskText,
-        completed: false,
+      try {
+        const response = await fetch("/api/todoCreate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            content: newTaskText,
+            completed: false,
+            userId: userData.id,
+          }),
+        })
+
+        if (!response.ok) throw new Error("Failed to create todo")
+        const newItem = await response.json()
+        setTodoItems([...todoItems, { id: newItem.id, content: newItem.content, completed: newItem.completed }])
+        setNewTaskText("")
+      } catch (error) {
+        console.error("Error creating todo:", error)
       }
-      setTodoItems([...todoItems, newItem])
-      setNewTaskText("")
     }
   }
 
@@ -213,14 +218,27 @@ export default function TodoSection() {
     setTodoItems(todoItems.map((item) => (item.id === id ? { ...item, isEditing: true } : item)))
   }
 
-  const updateItemText = (id: number, text: string) => {
-    setTodoItems(todoItems.map((item) => (item.id === id ? { ...item, text } : item)))
+  const updateItemContent = (id: number, content: string) => {
+    setTodoItems(todoItems.map((item) => (item.id === id ? { ...item, content } : item)))
   }
 
-  const finishEditing = (id: number) => {
+  const finishEditing = async (id: number) => {
+    const item = todoItems.find((item) => item.id === id)
+    if (!item) return
+
+    try {
+      const response = await fetch(`/api/todoUpdate`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({id:item.id, content: item.content, completed: item.completed }),
+      })
+      if (!response.ok) throw new Error("Failed to update todo content")
+    } catch (error) {
+      console.error("Error updating content:", error)
+    }
+
     setTodoItems(todoItems.map((item) => (item.id === id ? { ...item, isEditing: false } : item)))
   }
-
   return (
     <section id="todo-list" className="w-full bg-black text-white py-16">
       <div className="container mx-auto px-4">
@@ -228,6 +246,7 @@ export default function TodoSection() {
         <p className="text-center mb-12 max-w-2xl mx-auto">
           Drag and drop to set your main priorities, check when done and create what's new.
         </p>
+
 
         <div className="flex flex-col md:flex-row gap-8 max-w-5xl mx-auto">
           <DndProvider backend={Backend}>
@@ -267,7 +286,7 @@ export default function TodoSection() {
                       toggleComplete={toggleComplete}
                       deleteItem={deleteItem}
                       startEditing={startEditing}
-                      updateItemText={updateItemText}
+                      updateItemContent={updateItemContent}
                       finishEditing={finishEditing}
                     />
                   ))}
@@ -305,9 +324,9 @@ export default function TodoSection() {
                         checked={item.completed}
                         onChange={() => toggleComplete(item.id)}
                         className="w-5 h-5 mr-3 accent-green-500 cursor-pointer"
-                        aria-label={`Mark "${item.text}" as incomplete`}
+                        aria-label={`Mark "${item.content}" as incomplete`}
                       />
-                      <span className="flex-grow line-through text-gray-500">{item.text}</span>
+                      <span className="flex-grow line-through text-gray-500">{item.content}</span>
                       <span className="ml-2 text-xs text-gray-400">done</span>
                     </div>
                   ))}
