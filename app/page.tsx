@@ -24,7 +24,7 @@ export default function Home() {
       <Header />
       <Hero />
       <TodoTitle  />
-      <TodoSection /> 
+      {hasUserData === true && ( <TodoSection /> )}
       <GoodThingsCarousel />
       <ContactForm />
       <Footer />

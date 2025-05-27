@@ -245,7 +245,7 @@ export default function TodoSection() {
 
         <div className="flex flex-col md:flex-row gap-8 max-w-5xl mx-auto">
           <DndProvider backend={Backend}>
-            <div className="md:w-1/2 bg-white border border-[#ccc] text-black rounded-md  shadow-xl">
+            <div className="md:w-1/2 bg-white text-black rounded-md shadow-lg">
               <div className="bg-orange-500 w-full h-4"></div>
               <div className="p-6 pt-4">
                 <h1 className="flex justify-center font-bold mb-2 text-6xl">To-do</h1>
@@ -304,7 +304,7 @@ export default function TodoSection() {
               </div>
             </div>
 
-            <div className="w-full md:w-1/2 bg-white border border-[#ccc] text-black rounded-md  shadow-xl">
+            <div className="w-full md:w-1/2 bg-white text-black rounded-md  shadow-lg">
                 <div className="bg-green-500 w-full h-4"></div>
               <div className="pt-4 p-6">
                 <h3 className="flex justify-center font-bold mb-2 text-6xl">Done</h3>

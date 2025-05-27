@@ -15,7 +15,11 @@ export default function TodoSection() {
       clipPath: 'polygon(0 15%, 100% 0%, 100% 85%, 0% 100%)'
     }}>
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-6">To-do list</h2>
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-6 ">
+          <span className="border-b-4 border-green-500">
+          To-do list
+          </span>
+        </h2>
         
         {hasUserData === false && (
           <p className="text-center text-lg text-red-400 mb-4">
