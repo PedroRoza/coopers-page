@@ -60,36 +60,41 @@ export default function ContactForm() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  e.preventDefault()
 
-    if (!validateForm()) {
-      return
+  if (!validateForm()) return
+
+  setIsSubmitting(true)
+
+  try {
+    const response = await fetch("/api/sendMail", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+
+    if (!response.ok) {
+      throw new Error("Erro ao enviar o formulário")
     }
 
-    setIsSubmitting(true)
+    setSubmitSuccess(true)
+    setFormData({
+      name: "",
+      email: "",
+      telephone: "",
+      message: "",
+    })
 
-    // Simulate API call
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      console.log("Form submitted:", formData)
-      setSubmitSuccess(true)
-      setFormData({
-        name: "",
-        email: "",
-        telephone: "",
-        message: "",
-      })
-
-      // Reset success message after 3 seconds
-      setTimeout(() => {
-        setSubmitSuccess(false)
-      }, 3000)
-    } catch (error) {
-      console.error("Error submitting form:", error)
-    } finally {
-      setIsSubmitting(false)
-    }
+    setTimeout(() => setSubmitSuccess(false), 3000)
+  } catch (error) {
+    console.error("Erro ao enviar formulário:", error)
+    alert("Ocorreu um erro ao enviar sua mensagem. Tente novamente mais tarde.")
+  } finally {
+    setIsSubmitting(false)
   }
+}
 
   return (
     <section className="w-full bg-white py-16">
