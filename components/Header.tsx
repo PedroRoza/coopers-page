@@ -1,17 +1,35 @@
 "use client"
 
 import Image from "next/image"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import LoginDialog from "./LoginDialog"
 import RegisterDialog from "./RegisterDialog"
 
 export default function Header() {
   const [showLogin, setShowLogin] = useState(false)
   const [showRegister, setShowRegister] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  useEffect(() => {
+    const userData = localStorage.getItem("userData")
+    setIsLoggedIn(!!userData)
+  }, [])
+
+  const handleLogout = () => {
+    localStorage.removeItem("userData")
+    location.reload()
+  }
+
+  const handleLoginClick = () => {
+    if (isLoggedIn) {
+      handleLogout()
+    } else {
+      setShowLogin(true)
+    }
+  }
 
   return (
     <header className="w-full py-4 px-4 md:px-8 flex justify-between items-center z-10">
-      {/* Div da logo - pl-20 apenas em md+ */}
       <div className="logo pl-0 md:pl-20">
         <Image 
           src="/logo.png" 
@@ -23,17 +41,20 @@ export default function Header() {
       </div>
       
       <button
-        onClick={() => setShowLogin(true)}
+        onClick={handleLoginClick}
         className="bg-black text-white px-4 py-2 text-sm rounded hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500 w-[120px]"
-        aria-label="Entrar"
+        aria-label={isLoggedIn ? "Logout" : "Login"}
       >
-        entrar
+        {isLoggedIn ? "sair" : "entrar"}
       </button>
 
       {/* Dialogs */}
       {showLogin && (
         <LoginDialog
-          onClose={() => setShowLogin(false)}
+          onClose={() => {
+            setShowLogin(false)
+            setIsLoggedIn(true) // Assume que login foi bem-sucedido
+          }}
           onRegister={() => {
             setShowLogin(false)
             setShowRegister(true)
