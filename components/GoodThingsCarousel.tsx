@@ -41,7 +41,6 @@ export default function GoodThingsCarousel() {
   const [touchEnd, setTouchEnd] = useState(0)
   const [isMdOrLarger, setIsMdOrLarger] = useState(false)
 
-  // Detecta se a tela é md ou maior
   useEffect(() => {
     function handleResize() {
       setIsMdOrLarger(window.matchMedia("(min-width: 768px)").matches)
@@ -51,7 +50,6 @@ export default function GoodThingsCarousel() {
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
-  // Função de navegação, garante índice correto e avança apenas 1
   const goToSlide = (index: number) => {
     setCurrentIndex((current) => {
       let newIndex = index
@@ -96,7 +94,7 @@ export default function GoodThingsCarousel() {
               {carouselItems.map(({ id, image, title, description, altText }) => (
                 <div key={id} className="bg-white rounded-lg shadow-lg max-w-sm flex-shrink-0">
                   <div className="relative h-64">
-                    <Image src={image} alt={altText} fill className="object-cover" />
+                    <Image src={image} alt={altText} fill className="object-cover rounded-t-lg" />
                   </div>
                   <div className="p-6">
                     <h3 className="text-xl font-semibold mb-2">{title}</h3>
@@ -116,14 +114,13 @@ export default function GoodThingsCarousel() {
               onTouchEnd={handleTouchEnd}
             >
               <div className="bg-white rounded-lg overflow-hidden shadow-lg">
-                <div className="relative h-48">
-                  <Image
-                    src={carouselItems[currentIndex].image || "/placeholder.svg"}
-                    alt={carouselItems[currentIndex].altText}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
+                <Image
+                  src={carouselItems[currentIndex].image || "/placeholder.svg"}
+                  alt={carouselItems[currentIndex].altText}
+                  width={600}
+                  height={300}
+                  className="object-cover w-full"
+                />
                 <div className="p-6">
                   <h3 className="text-xl font-semibold mb-2">{carouselItems[currentIndex].title}</h3>
                   <p className="text-gray-600 mb-4">{carouselItems[currentIndex].description}</p>
@@ -133,7 +130,6 @@ export default function GoodThingsCarousel() {
                 </div>
               </div>
 
-              {/* Bullets */}
               <div className="flex justify-center mt-6 space-x-2">
                 {carouselItems.map((_, index) => (
                   <button
@@ -147,8 +143,7 @@ export default function GoodThingsCarousel() {
                   />
                 ))}
               </div>
-
-              {/* Botões Previous/Next corrigidos */}
+                {/* btn slide */}
               <button
                 className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white/80 p-2 rounded-r-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 onClick={() =>

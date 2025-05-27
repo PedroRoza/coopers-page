@@ -50,7 +50,7 @@ export default function Home() {
       <Header />
       <Hero />
       <TodoTitle />
-      <div  className="relative">
+      <div className="relative">
         <div className="absolute left-0 top-60 w-60 h-60 z-[-1]">
           <img
             src="/lateral.png"
