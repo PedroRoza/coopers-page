@@ -110,7 +110,7 @@ export default function ContactForm() {
               <div className="h-4 w-16 bg-green-500"></div>
               <div className="relative w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden">
                 <img
-                  src="/image-form.png"
+                  src="/image-form.webp"
                   alt="Contact person"
                   style={{
                     position: 'absolute',

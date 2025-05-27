@@ -23,24 +23,24 @@ export default function Home() {
     <main className="min-h-screen flex flex-col overflow-x-hidden">
       <div className="absolute inset-y-0 right-0 top-0 z-10 w-2/5 h-screen hidden sm:block ">
         <img
-          src="/BG.png"
+          src="/BG.webp"
           alt="Fundo decorativo"
           className="w-full h-full object-cover"
         />
         <img
-          src="/foto.png"
+          src="/foto.webp"
           alt="Decoração lateral"
           className="w-full h-1/2 object-contain absolute top-1/4"
         />
       </div>
       <div className="absolute inset-y-0 right-0 top-1/2 z-10 w-3/4 block sm:hidden ">
         <img
-          src="/BG.png"
+          src="/BG.webp"
           alt="Fundo decorativo"
           className="w-full h-full object-cover"
         />
         <img
-          src="/foto.png"
+          src="/foto.webp"
           alt="Decoração lateral"
           className="w-full h-3/4 object-contain absolute top-10"
         />
@@ -52,7 +52,7 @@ export default function Home() {
       <div className="relative">
         <div className="absolute left-0 top-60 w-60 h-60 z-[-1]">
           <img
-            src="/lateral.png"
+            src="/lateral.webp"
             alt="triangle design decorative"
             className="w-full h-full object-cover"
           />

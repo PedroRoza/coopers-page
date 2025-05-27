@@ -14,21 +14,21 @@ export default function GoodThingsCarousel() {
   const carouselItems: CarouselItem[] = [
     {
       id: 1,
-      image: "/image1.png",
+      image: "/image1.webp",
       title: "Productivity",
       description: "Organize your daily job enhance your life performance",
       altText: "Two men looking at a laptop",
     },
     {
       id: 2,
-      image: "/image2.png",
+      image: "/image2.webp",
       title: "Track Your Progress",
       description: "Mark one activity as done makes your brain understands the power of doing",
       altText: "Person working with art supplies",
     },
     {
       id: 3,
-      image: "/image3.png",
+      image: "/image3.webp",
       title: "Careful Planning",
       description: "Careful with misunderstanding the difference between a list of things and a list of desires",
       altText: "Hands working on a sewing machine",
