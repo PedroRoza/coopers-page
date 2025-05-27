@@ -1,8 +1,6 @@
 "use client"
 
-import type React from "react"
-
-import { useState, useRef, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
 
 interface CarouselItem {
@@ -41,134 +39,151 @@ export default function GoodThingsCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [touchStart, setTouchStart] = useState(0)
   const [touchEnd, setTouchEnd] = useState(0)
-  const carouselRef = useRef<HTMLDivElement>(null)
+  const [isMdOrLarger, setIsMdOrLarger] = useState(false)
+
+  // Detecta se a tela é md ou maior
+  useEffect(() => {
+    function handleResize() {
+      setIsMdOrLarger(window.matchMedia("(min-width: 768px)").matches)
+    }
+    handleResize()
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
 
   const goToSlide = (index: number) => {
     let newIndex = index
-    if (newIndex < 0) {
-      newIndex = carouselItems.length - 1
-    } else if (newIndex >= carouselItems.length) {
-      newIndex = 0
-    }
+    if (newIndex < 0) newIndex = carouselItems.length - 1
+    else if (newIndex >= carouselItems.length) newIndex = 0
     setCurrentIndex(newIndex)
   }
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart(e.targetTouches[0].clientX)
-  }
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX)
-  }
-
+  const handleTouchStart = (e: React.TouchEvent) => setTouchStart(e.targetTouches[0].clientX)
+  const handleTouchMove = (e: React.TouchEvent) => setTouchEnd(e.targetTouches[0].clientX)
   const handleTouchEnd = () => {
-    if (touchStart - touchEnd > 50) {
-      // Swipe left
-      goToSlide(currentIndex + 1)
-    }
-    if (touchStart - touchEnd < -50) {
-      // Swipe right
-      goToSlide(currentIndex - 1)
-    }
+    if (touchStart - touchEnd > 50) goToSlide(currentIndex + 1)
+    if (touchStart - touchEnd < -50) goToSlide(currentIndex - 1)
   }
 
-  // Auto-advance carousel
   useEffect(() => {
-    const interval = setInterval(() => {
-      goToSlide(currentIndex + 1)
-    }, 5000)
-    return () => clearInterval(interval)
-  }, [currentIndex])
+  if (isMdOrLarger) return
+
+  const interval = setInterval(() => {
+    setCurrentIndex((prevIndex) => {
+      let newIndex = prevIndex + 1
+      if (newIndex >= carouselItems.length) newIndex = 0
+      return newIndex
+    })
+  }, 5000)
+
+  return () => clearInterval(interval)
+}, [isMdOrLarger])
 
   return (
     <section className="w-full bg-white py-16">
-      <div className="container mx-auto px-4">
-        <div className="bg-green-500 p-6 md:p-10 rounded-md">
+      <div className="container relative">
+        <div className="bg-green-500 h-3/4 w-10/12 absolute left-0" style={{borderRadius: '0 15px 15px 0'}}></div>
+        <div className="p-6 md:p-10 rounded-md relative z-10">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-8">good things</h2>
-
-          <div
-            ref={carouselRef}
-            className="relative overflow-hidden"
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-          >
-            <div className="flex justify-center">
-              <div className="w-full max-w-md">
-                <div className="bg-white rounded-lg overflow-hidden shadow-lg">
-                  <div className="relative h-48 md:h-64">
-                    <Image
-                      src={carouselItems[currentIndex].image || "/placeholder.svg"}
-                      alt={carouselItems[currentIndex].altText}
-                      fill
-                      className="object-cover"
-                    />
+          {isMdOrLarger ? (
+            <div className="flex justify-center gap-6">
+              {carouselItems.map(({ id, image, title, description, altText }) => (
+                <div key={id} className="bg-white rounded-lg shadow-lg max-w-sm flex-shrink-0">
+                  <div className="relative h-64">
+                    <Image src={image} alt={altText} fill className="object-cover" />
                   </div>
                   <div className="p-6">
-                    <h3 className="text-xl font-semibold mb-2">{carouselItems[currentIndex].title}</h3>
-                    <p className="text-gray-600 mb-4">{carouselItems[currentIndex].description}</p>
+                    <h3 className="text-xl font-semibold mb-2">{title}</h3>
+                    <p className="text-gray-600 mb-4">{description}</p>
                     <button className="text-green-500 hover:text-green-700 focus:outline-none focus:underline">
                       read more
                     </button>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            <div className="flex justify-center mt-6 space-x-2">
-              {carouselItems.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => goToSlide(index)}
-                  className={`w-3 h-3 rounded-full focus:outline-none focus:ring-2 focus:ring-white ${
-                    index === currentIndex ? "bg-green-500" : "bg-gray-300"
-                  }`}
-                  aria-label={`Go to slide ${index + 1}`}
-                  aria-current={index === currentIndex ? "true" : "false"}
-                />
               ))}
             </div>
-
-            <button
-              className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white/80 p-2 rounded-r-md focus:outline-none focus:ring-2 focus:ring-green-500"
-              onClick={() => goToSlide(currentIndex - 1)}
-              aria-label="Previous slide"
+          ) : (
+            <div
+              className="relative overflow-hidden max-w-md mx-auto"
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="15 18 9 12 15 6"></polyline>
-              </svg>
-            </button>
+              <div className="bg-white rounded-lg overflow-hidden shadow-lg">
+                <div className="relative h-48">
+                  <Image
+                    src={carouselItems[currentIndex].image || "/placeholder.svg"}
+                    alt={carouselItems[currentIndex].altText}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold mb-2">{carouselItems[currentIndex].title}</h3>
+                  <p className="text-gray-600 mb-4">{carouselItems[currentIndex].description}</p>
+                  <button className="text-green-500 hover:text-green-700 focus:outline-none focus:underline">
+                    read more
+                  </button>
+                </div>
+              </div>
 
-            <button
-              className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white/80 p-2 rounded-l-md focus:outline-none focus:ring-2 focus:ring-green-500"
-              onClick={() => goToSlide(currentIndex + 1)}
-              aria-label="Next slide"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+              {/* Bullets */}
+              <div className="flex justify-center mt-6 space-x-2">
+                {carouselItems.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => goToSlide(index)}
+                    className={`w-4 h-4 rounded-full focus:outline-none focus:ring-2 focus:ring-white ${
+                      index === currentIndex ? "bg-green-500" : "bg-gray-300"
+                    }`}
+                    aria-label={`Go to slide ${index + 1}`}
+                    aria-current={index === currentIndex ? "true" : "false"}
+                  />
+                ))}
+              </div>
+
+              {/* Btns */}
+              <button
+                className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white/80 p-2 rounded-r-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                onClick={() => goToSlide(currentIndex - 1)}
+                aria-label="Previous slide"
               >
-                <polyline points="9 18 15 12 9 6"></polyline>
-              </svg>
-            </button>
-          </div>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+              </button>
+
+              <button
+                className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white/80 p-2 rounded-l-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                onClick={() => goToSlide(currentIndex + 1)}
+                aria-label="Next slide"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </section>
