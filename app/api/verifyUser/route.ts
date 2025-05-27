@@ -47,7 +47,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Erro na verificação:", error)
     return new Response(
-      JSON.stringify({ message: "Erro interno do servidor" }),
+      JSON.stringify({ message: "Erro interno do servidor" + error }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     )
   } finally {
