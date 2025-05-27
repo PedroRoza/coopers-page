@@ -1,8 +1,7 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
+import { toast } from "react-hot-toast"
 
 interface RegisterDialogProps {
   onClose: () => void
@@ -11,38 +10,56 @@ interface RegisterDialogProps {
 
 export default function RegisterDialog({ onClose, onLogin }: RegisterDialogProps) {
   const [formData, setFormData] = useState({
-    username: "",
+    user: "",
     email: "",
     password: "",
     confirmPassword: "",
   })
 
   const [errors, setErrors] = useState({
-    username: "",
+    user: "",
     email: "",
     password: "",
     confirmPassword: "",
+    server: "",
   })
+
+  const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const validateForm = () => {
     const newErrors = {
-      username: "",
+      user: "",
       email: "",
       password: "",
       confirmPassword: "",
+      server: "",
     }
     let isValid = true
 
-    if (!formData.username.trim()) {
-      newErrors.username = "Username is required"
+    const trimmedUsername = formData.user.trim()
+
+    if (!trimmedUsername) {
+      newErrors.user = "User is required"
+      isValid = false
+    } else if (trimmedUsername.length > 50) {
+      newErrors.user = "User must be at most 50 characters"
+      isValid = false
+    } else if (!/^[a-zA-Z0-9_]+$/.test(trimmedUsername)) {
+      newErrors.user = "User can only contain letters, numbers and underscores"
       isValid = false
     }
 
-    if (!formData.email.trim()) {
+    const trimmedEmail = formData.email.trim()
+    if (!trimmedEmail) {
       newErrors.email = "Email is required"
       isValid = false
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    } else if (!/\S+@\S+\.\S+/.test(trimmedEmail)) {
       newErrors.email = "Email is invalid"
+      isValid = false
+    } else if (trimmedEmail.length > 50) {
+      newErrors.email = "Email must be at most 50 characters"
       isValid = false
     }
 
@@ -52,9 +69,12 @@ export default function RegisterDialog({ onClose, onLogin }: RegisterDialogProps
     } else if (formData.password.length < 6) {
       newErrors.password = "Password must be at least 6 characters"
       isValid = false
+    } else if (formData.password.length > 25) {
+      newErrors.password = "Password must be at most 25 characters"
+      isValid = false
     }
 
-    if (formData.password !== formData.confirmPassword) {
+    if (formData.confirmPassword !== formData.password) {
       newErrors.confirmPassword = "Passwords do not match"
       isValid = false
     }
@@ -66,19 +86,42 @@ export default function RegisterDialog({ onClose, onLogin }: RegisterDialogProps
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
-
-    // Clear error when user types
-    if (errors[name as keyof typeof errors]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }))
-    }
+    setErrors((prev) => ({ ...prev, [name]: "", server: "" }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (validateForm()) {
-      console.log("Registration data:", formData)
-      // Here you would normally handle the registration logic
-      onClose()
+
+    if (!validateForm()) return
+
+    setLoading(true)
+    const toastId = toast.loading("Registering...")    
+
+    try {
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: formData.user.trim(),
+          email: formData.email.trim(),
+          password: formData.password,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setErrors((prev) => ({ ...prev, server: data.error || "Registration failed" }))
+        toast.error(data.error || "Registration failed", { id: toastId })
+      } else {
+        toast.success("Registration successful!", { id: toastId })
+        onClose()
+      }
+    } catch (err) {
+      setErrors((prev) => ({ ...prev, server: "Something went wrong." }))
+      toast.error("Something went wrong.", { id: toastId })
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -102,95 +145,70 @@ export default function RegisterDialog({ onClose, onLogin }: RegisterDialogProps
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="register-username" className="block mb-1">
-                Username:
-              </label>
-              <input
-                type="text"
-                id="register-username"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                className={`w-full p-2 border ${errors.username ? "border-red-500" : "border-gray-300"} rounded`}
-                aria-invalid={!!errors.username}
-                aria-describedby={errors.username ? "username-error" : undefined}
-              />
-              {errors.username && (
-                <p id="username-error" className="mt-1 text-red-500 text-sm">
-                  {errors.username}
-                </p>
-              )}
-            </div>
+            {["user", "email", "password", "confirmPassword"].map((field) => {
+              const isPasswordField = field === "password" || field === "confirmPassword"
+              const show =
+                field === "password" ? showPassword : field === "confirmPassword" ? showConfirmPassword : false
+              const toggleShow =
+                field === "password"
+                  ? () => setShowPassword((prev) => !prev)
+                  : () => setShowConfirmPassword((prev) => !prev)
 
-            <div>
-              <label htmlFor="register-email" className="block mb-1">
-                Email:
-              </label>
-              <input
-                type="email"
-                id="register-email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className={`w-full p-2 border ${errors.email ? "border-red-500" : "border-gray-300"} rounded`}
-                aria-invalid={!!errors.email}
-                aria-describedby={errors.email ? "email-error" : undefined}
-              />
-              {errors.email && (
-                <p id="email-error" className="mt-1 text-red-500 text-sm">
-                  {errors.email}
-                </p>
-              )}
-            </div>
+              return (
+                <div key={field}>
+                  <label htmlFor={`register-${field}`} className="block mb-1 capitalize">
+                    {field === "confirmPassword"
+                      ? "Confirm Password"
+                      : field.charAt(0).toUpperCase() + field.slice(1)}
+                    :
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={
+                        isPasswordField ? (show ? "text" : "password") : field === "email" ? "email" : "text"
+                      }
+                      id={`register-${field}`}
+                      name={field}
+                      value={(formData as any)[field]}
+                      onChange={handleChange}
+                      maxLength={
+                        field === "user" || field === "email"
+                          ? 50
+                          : field.includes("password")
+                          ? 25
+                          : undefined
+                      }
+                      className={`w-full p-2 pr-10 border ${
+                        (errors as any)[field] ? "border-red-500" : "border-gray-300"
+                      } rounded`}
+                      aria-invalid={(errors as any)[field] ? "true" : undefined}
+                    />
+                    {isPasswordField && (
+                      <button
+                        type="button"
+                        onClick={toggleShow}
+                        className="absolute inset-y-0 right-2 px-1 text-sm text-gray-500 hover:text-gray-700 focus:outline-none"
+                        tabIndex={-1}
+                      >
+                        {show ? "Hide" : "Show"}
+                      </button>
+                    )}
+                  </div>
+                  {(errors as any)[field] && (
+                    <p className="mt-1 text-red-500 text-sm">{(errors as any)[field]}</p>
+                  )}
+                </div>
+              )
+            })}
 
-            <div>
-              <label htmlFor="register-password" className="block mb-1">
-                Password:
-              </label>
-              <input
-                type="password"
-                id="register-password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className={`w-full p-2 border ${errors.password ? "border-red-500" : "border-gray-300"} rounded`}
-                aria-invalid={!!errors.password}
-                aria-describedby={errors.password ? "password-error" : undefined}
-              />
-              {errors.password && (
-                <p id="password-error" className="mt-1 text-red-500 text-sm">
-                  {errors.password}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label htmlFor="register-confirm-password" className="block mb-1">
-                Confirm Password:
-              </label>
-              <input
-                type="password"
-                id="register-confirm-password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className={`w-full p-2 border ${errors.confirmPassword ? "border-red-500" : "border-gray-300"} rounded`}
-                aria-invalid={!!errors.confirmPassword}
-                aria-describedby={errors.confirmPassword ? "confirm-password-error" : undefined}
-              />
-              {errors.confirmPassword && (
-                <p id="confirm-password-error" className="mt-1 text-red-500 text-sm">
-                  {errors.confirmPassword}
-                </p>
-              )}
-            </div>
+            {errors.server && <p className="text-red-600 text-sm">{errors.server}</p>}
 
             <button
               type="submit"
-              className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+              disabled={loading}
+              className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50"
             >
-              Register
+              {loading ? "Registering..." : "Register"}
             </button>
           </form>
 
