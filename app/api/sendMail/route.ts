@@ -36,7 +36,7 @@ export async function POST(req: Request) {
         <p><strong>Phone:</strong> ${telephone || 'Not provided'}</p>
         <p><strong>Message:</strong><br/>${message}</p>
       `,
-    })
+    }) 
 
     // email de retorno pelo contato
     await transporter.sendMail({
