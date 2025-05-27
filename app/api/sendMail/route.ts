@@ -37,7 +37,7 @@ export async function POST(req: Request) {
         <p><strong>Message:</strong><br/>${message}</p>
       `,
     })
- 
+
     // email de retorno pelo contato
     await transporter.sendMail({
       from: `"Coopers page" <${process.env.EMAIL_USER}>`,
