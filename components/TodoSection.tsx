@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { DndProvider, useDrag, useDrop } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
 import { TouchBackend } from "react-dnd-touch-backend"
@@ -110,27 +110,51 @@ function TodoItem({
 }
 
 export default function TodoSection() {
-  const [todoItems, setTodoItems] = useState<TodoItem[]>([
-    { id: 1, text: "This is a new task", completed: false },
-    { id: 2, text: "Develop the To-do list page", completed: false },
-    { id: 3, text: "Create the drag-and-drop functionality", completed: false },
-    { id: 4, text: "Add new tasks", completed: false },
-    { id: 5, text: "Delete items", completed: false },
-    { id: 6, text: "Erase all", completed: false },
-    { id: 7, text: "Checked items goes to Done list", completed: false },
-    { id: 8, text: "This text indicates the item may be edited", completed: false },
-    { id: 9, text: "Editing an item", completed: false },
-  ])
-
-  const [completedItems, setCompletedItems] = useState<TodoItem[]>([
-    { id: 101, text: "Get FTP credentials", completed: true },
-    { id: 102, text: "Home Page Design", completed: true },
-    { id: 103, text: "E-mail John about the deadline", completed: true },
-    { id: 104, text: "Create a Google Drive folder", completed: true },
-    { id: 105, text: "Send a gift to the client", completed: true },
-  ])
+  const [todoItems, setTodoItems] = useState<TodoItem[]>([])
+  const [completedItems, setCompletedItems] = useState<TodoItem[]>([])
 
   const [newTaskText, setNewTaskText] = useState("")
+
+  useEffect(() => {
+    const fetchTodos = async () => {
+      try {
+        const res = await fetch("/api/todos")
+        const data: TodoItem[] = await res.json()
+        console.log('data', data)
+        const todos = data.filter((todo) => !todo.completed)
+        const completed = data.filter((todo) => todo.completed)
+
+        setTodoItems(todos)
+        setCompletedItems(completed)
+      } catch (error) {
+        console.error("Failed to fetch todos", error)
+      }
+    }
+
+    fetchTodos()
+  }, [])
+  
+  // const [todoItems, setTodoItems] = useState<TodoItem[]>([
+  //   { id: 1, text: "This is a new task", completed: false },
+  //   { id: 2, text: "Develop the To-do list page", completed: false },
+  //   { id: 3, text: "Create the drag-and-drop functionality", completed: false },
+  //   { id: 4, text: "Add new tasks", completed: false },
+  //   { id: 5, text: "Delete items", completed: false },
+  //   { id: 6, text: "Erase all", completed: false },
+  //   { id: 7, text: "Checked items goes to Done list", completed: false },
+  //   { id: 8, text: "This text indicates the item may be edited", completed: false },
+  //   { id: 9, text: "Editing an item", completed: false },
+  // ])
+
+  // const [completedItems, setCompletedItems] = useState<TodoItem[]>([
+  //   { id: 101, text: "Get FTP credentials", completed: true },
+  //   { id: 102, text: "Home Page Design", completed: true },
+  //   { id: 103, text: "E-mail John about the deadline", completed: true },
+  //   { id: 104, text: "Create a Google Drive folder", completed: true },
+  //   { id: 105, text: "Send a gift to the client", completed: true },
+  // ])
+
+  // const [newTaskText, setNewTaskText] = useState("")
   const isMobile = useMediaQuery("(max-width: 768px)")
   const Backend = isMobile ? TouchBackend : HTML5Backend
 
