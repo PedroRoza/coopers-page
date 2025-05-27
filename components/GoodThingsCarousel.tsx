@@ -86,11 +86,11 @@ export default function GoodThingsCarousel() {
     <section className="w-full bg-white py-16">
       <div className="container relative">
         <div
-          className="bg-green-500 h-3/4 w-10/12 absolute left-0"
-          style={{ borderRadius: "0 15px 15px 0" }}
+          className="bg-green-500 h-3/4 w-9/12 absolute md:left-20"
+          style={{ borderRadius: "15px" }}
         ></div>
         <div className="p-6 md:p-10 rounded-md relative z-10">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-8">good things</h2>
+          <h2 className="text-3xl md:text-4xl md:pl-32 font-bold text-white mb-8">good things</h2>
           {isMdOrLarger ? (
             <div className="flex justify-center gap-6">
               {carouselItems.map(({ id, image, title, description, altText }) => (

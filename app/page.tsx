@@ -17,21 +17,19 @@ export default function Home() {
     setHasUserData(!!userData);
   }, []);
 
-  if (hasUserData === null) return null; // ou um loader/spinner temporário
+  if (hasUserData === null) return null;
 
   return (
     <main className="min-h-screen flex flex-col overflow-x-hidden">
       <Header />
       <Hero />
       <TodoTitle />
-      <div>
-        <div className="z-0 absolute left-0 w-32 flex items-start h-40">
+      <div  className="relative">
+        <div className="absolute left-0 top-60 w-60 h-60 z-[-1]">
           <img
             src="/lateral.png"
             alt="triangle design decorative"
-            width={300}
-            height={200}
-            className="object-cover"
+            className="w-full h-full object-cover"
           />
         </div>
         {hasUserData === true && <TodoSection />}

@@ -240,7 +240,7 @@ export default function TodoSection() {
     setTodoItems(todoItems.map((item) => (item.id === id ? { ...item, isEditing: false } : item)))
   }
   return (
-    <section id="todo-list" className="w-ful py-16">
+    <section id="todo-list" className="w-ful py-16 z-10">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row gap-8 max-w-5xl mx-auto">
           <DndProvider backend={Backend}>
