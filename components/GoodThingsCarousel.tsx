@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 
 interface CarouselItem {
@@ -51,38 +51,44 @@ export default function GoodThingsCarousel() {
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
+  // Função de navegação, garante índice correto e avança apenas 1
   const goToSlide = (index: number) => {
-    let newIndex = index
-    if (newIndex < 0) newIndex = carouselItems.length - 1
-    else if (newIndex >= carouselItems.length) newIndex = 0
-    setCurrentIndex(newIndex)
+    setCurrentIndex((current) => {
+      let newIndex = index
+      if (newIndex < 0) newIndex = carouselItems.length - 1
+      else if (newIndex >= carouselItems.length) newIndex = 0
+      return newIndex
+    })
   }
 
   const handleTouchStart = (e: React.TouchEvent) => setTouchStart(e.targetTouches[0].clientX)
   const handleTouchMove = (e: React.TouchEvent) => setTouchEnd(e.targetTouches[0].clientX)
   const handleTouchEnd = () => {
     if (touchStart - touchEnd > 50) goToSlide(currentIndex + 1)
-    if (touchStart - touchEnd < -50) goToSlide(currentIndex - 1)
+    else if (touchStart - touchEnd < -50) goToSlide(currentIndex - 1)
   }
 
   useEffect(() => {
-  if (isMdOrLarger) return
+    if (isMdOrLarger) return
 
-  const interval = setInterval(() => {
-    setCurrentIndex((prevIndex) => {
-      let newIndex = prevIndex + 1
-      if (newIndex >= carouselItems.length) newIndex = 0
-      return newIndex
-    })
-  }, 5000)
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => {
+        let newIndex = prevIndex + 1
+        if (newIndex >= carouselItems.length) newIndex = 0
+        return newIndex
+      })
+    }, 5000)
 
-  return () => clearInterval(interval)
-}, [isMdOrLarger])
+    return () => clearInterval(interval)
+  }, [isMdOrLarger])
 
   return (
     <section className="w-full bg-white py-16">
       <div className="container relative">
-        <div className="bg-green-500 h-3/4 w-10/12 absolute left-0" style={{borderRadius: '0 15px 15px 0'}}></div>
+        <div
+          className="bg-green-500 h-3/4 w-10/12 absolute left-0"
+          style={{ borderRadius: "0 15px 15px 0" }}
+        ></div>
         <div className="p-6 md:p-10 rounded-md relative z-10">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-8">good things</h2>
           {isMdOrLarger ? (
@@ -142,10 +148,12 @@ export default function GoodThingsCarousel() {
                 ))}
               </div>
 
-              {/* Btns */}
+              {/* Botões Previous/Next corrigidos */}
               <button
                 className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white/80 p-2 rounded-r-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                onClick={() => goToSlide(currentIndex - 1)}
+                onClick={() =>
+                  setCurrentIndex((prev) => (prev - 1 < 0 ? carouselItems.length - 1 : prev - 1))
+                }
                 aria-label="Previous slide"
               >
                 <svg
@@ -165,7 +173,9 @@ export default function GoodThingsCarousel() {
 
               <button
                 className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white/80 p-2 rounded-l-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                onClick={() => goToSlide(currentIndex + 1)}
+                onClick={() =>
+                  setCurrentIndex((prev) => (prev + 1 >= carouselItems.length ? 0 : prev + 1))
+                }
                 aria-label="Next slide"
               >
                 <svg
